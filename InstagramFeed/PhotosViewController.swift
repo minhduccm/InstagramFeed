@@ -60,7 +60,15 @@ class PhotosViewController: UIViewController, UITableViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! PhotoDetailViewController
+        
+        let idx = photosTableView.indexPathForSelectedRow?.row
+        
+        nextVC.usernameText = (photos[idx!] as NSDictionary).value(forKeyPath: "user.username") as! String!
+        //nextVC.captionText = (photos[idx!] as NSDictionary).value(forKeyPath: "caption") as! String!
+        nextVC.photoDetailUrl = (photos[idx!] as NSDictionary).value(forKeyPath: "images.standard_resolution.url") as! String!
+    }
 }
 
 
@@ -75,7 +83,7 @@ extension PhotosViewController : UITableViewDataSource {
         let photo = photos[indexPath.row]
         let user = photo["user"] as! NSDictionary
         let image = photo["images"] as! NSDictionary
-        let standardImage = image["standard_resolution"] as! NSDictionary
+        let standardImage = image["low_resolution"] as! NSDictionary
         
         cell.userNameLabel.text = user["username"] as? String
         cell.avatarImageView.setImageWith(URL(string: (user["profile_picture"] as? String)!)!)
