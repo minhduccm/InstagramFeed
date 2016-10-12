@@ -15,7 +15,7 @@ class PhotosViewController: UIViewController, UITableViewDelegate {
     
     @IBOutlet weak var photosTableView: UITableView!
     
-    func loadData() {
+    func refreshControlAction() {
         let accessToken = "435569061.c66ada7.d12d19c8687e427591f254586e4f3e47"
         let userId = "435569061"
         let url = URL(string: "https://api.instagram.com/v1/users/\(userId)/media/recent/?access_token=\(accessToken)")
@@ -38,6 +38,7 @@ class PhotosViewController: UIViewController, UITableViewDelegate {
                             if let photoData = responseDictionary["data"] as? [NSDictionary] {
                                 self.photos = photoData
                                 self.photosTableView.reloadData()
+                                self.refreshControl.endRefreshing()
                             }
                         }
                     }
@@ -46,13 +47,17 @@ class PhotosViewController: UIViewController, UITableViewDelegate {
         }
     }
 
+    let refreshControl = UIRefreshControl()
     override func viewDidLoad() {
         super.viewDidLoad()
         
         photosTableView.delegate = self
         photosTableView.dataSource = self
 
-        loadData()
+        refreshControl.addTarget(self, action: #selector(PhotosViewController.refreshControlAction), for: UIControlEvents.valueChanged)
+        refreshControlAction()
+        
+        photosTableView.addSubview(refreshControl)
     }
 
     override func didReceiveMemoryWarning() {
